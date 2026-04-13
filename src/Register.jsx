@@ -2,6 +2,7 @@ import { useState } from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
 
+
 export default function Register() {
   const [form, setForm] = useState({
     lastName: "",
@@ -23,7 +24,7 @@ export default function Register() {
       alert("Passwords do not match.");
       return;
     }
-    navigate("/login");
+    navigate("/");
   };
 
   return (

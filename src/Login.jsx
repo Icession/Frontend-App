@@ -1,8 +1,15 @@
 import React from "react";
 import "./Login.css";
-import { Link } from "react-router-dom"; 
- 
+import { Link, useNavigate } from "react-router-dom";
+
 function App() {
+  const navigate = useNavigate();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    navigate("/home");
+  };
+
   return (
     <div className="app">
       <div className="left-panel">
@@ -14,30 +21,30 @@ function App() {
           Always watched.
         </h1>
       </div>
- 
+
       <div className="right-panel">
         <div className="login-card">
           <h2>Login</h2>
- 
-          <form className="login-form">
+
+          <form className="login-form" onSubmit={handleSubmit}>
             <label>Email</label>
-            <input type="email" placeholder="Enter email" />
- 
+            <input type="email" placeholder="Enter email" required />
+
             <label>Password</label>
-            <input type="password" placeholder="Enter password" />
- 
+            <input type="password" placeholder="Enter password" required />
+
             <div className="options">
               <label className="remember">
-                <input type="checkbox"/>
+                <input type="checkbox" />
                 Remember me
               </label>
-              <a href="/">Forgot password?</a>
+              <button type="button" className="forgot-btn" onClick={() => navigate("/forgot-password")}>Forgot password?</button>
             </div>
- 
+
             <button type="submit">Login</button>
- 
+
             <p className="or-text">Or login with</p>
- 
+
             <div className="social-login">
               <button type="button" className="social-btn facebook">
                 <span className="icon">f</span> Facebook
@@ -46,9 +53,10 @@ function App() {
                 <span className="icon">G</span> Google
               </button>
             </div>
- 
+
             <p className="signup-text">
-              Don’t have an account? <a href="/">Sign up here</a>
+              Don't have an account?{" "}
+              <Link to="/register">Sign up here</Link>
             </p>
           </form>
         </div>
@@ -56,5 +64,5 @@ function App() {
     </div>
   );
 }
- 
+
 export default App;

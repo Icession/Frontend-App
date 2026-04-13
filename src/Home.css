@@ -10,6 +10,66 @@
   font-family: "Courier New", Courier, monospace;
 }
 
+.navbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #f5e6d3;
+  padding: 12px 32px;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-icon svg {
+  width: 38px;
+  height: 38px;
+}
+
+.brand-text {
+  font-size: 1.2rem;
+  color: #111;
+  font-family: "Georgia", serif;
+  font-weight: 400;
+}
+
+.brand-text strong {
+  font-weight: 700;
+}
+
+.navbar-links {
+  list-style: none;
+  display: flex;
+  gap: 32px;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  background: none;
+  border: none;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  color: #333;
+  font-size: 15px;
+  font-family: "Courier New", Courier, monospace;
+  padding-bottom: 4px;
+  transition: color 0.2s, border-color 0.2s;
+}
+
+.nav-link:hover {
+  color: #8b0000;
+}
+
+.nav-link.active {
+  color: #111;
+  border-bottom: 2px solid #8b0000;
+  font-weight: 600;
+}
+
 .home-main {
   flex: 1;
   background: linear-gradient(160deg, #8b0000 0%, #5c0000 100%);
@@ -37,7 +97,6 @@
   font-weight: 400;
   line-height: 1.4;
   margin-bottom: 12px;
-  font-family: "Courier New", Courier, monospace;
 }
 
 .home-subtext {
@@ -105,7 +164,7 @@
   font-weight: 600;
   cursor: pointer;
   font-family: "Courier New", Courier, monospace;
-  transition: background 0.2s, color 0.2s;
+  transition: background 0.2s;
   white-space: nowrap;
 }
 
@@ -144,7 +203,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  backdrop-filter: blur(4px);
 }
 
 .hero-svg {
@@ -152,20 +210,33 @@
   height: 160px;
 }
 
+.stub-main {
+  flex: 1;
+  background: linear-gradient(160deg, #8b0000 0%, #5c0000 100%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  padding: 48px;
+}
+
+.stub-title {
+  color: #fff;
+  font-size: 2.5rem;
+  font-weight: 400;
+}
+
+.stub-text {
+  color: rgba(255, 255, 255, 0.75);
+  font-size: 15px;
+  text-align: center;
+  max-width: 400px;
+}
+
 @media (max-width: 640px) {
-  .home-content {
-    flex-direction: column;
-  }
-
-  .home-right {
-    display: none;
-  }
-
-  .search-row {
-    flex-direction: column;
-  }
-
-  .btn-search {
-    width: 100%;
-  }
+  .home-content { flex-direction: column; }
+  .home-right { display: none; }
+  .search-row { flex-direction: column; }
+  .btn-search { width: 100%; }
 }

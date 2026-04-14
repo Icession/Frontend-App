@@ -6,7 +6,6 @@ import Register from './Register';
 import Login from './Login';
 import Home from './Home';
 import Navbar from './Navbar';
-import Faq from './Faq';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

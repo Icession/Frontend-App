@@ -5,11 +5,8 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Register from './Register';
 import Login from './Login';
 import Home from './Home';
-<<<<<<< HEAD
-import About from './About'; 
-=======
 import Navbar from './Navbar';
->>>>>>> 3cd952b7e223322240749e33e1c5ac6c31690a62
+import Faq from './Faq';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

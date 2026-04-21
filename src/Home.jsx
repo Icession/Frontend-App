@@ -5,10 +5,40 @@ import About from "./About";
 import Faq from "./Faq";
 import Account from "./Account";
 import Maps from "./Maps";
+import Sampledata from "./RouteSampledata";
 
 function HomePage() {
   const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searched, setSearched] = useState(false);
   const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (query.trim() === "") {
+      setSearchResults([]);
+      setSearched(false);
+      return;
+    }
+    
+    const results = Sampledata.filter((route) =>
+      route.destination.toLowerCase().includes(query.toLowerCase()) ||
+      route.origin.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    setSearchResults(results);
+    setSearched(true);
+  };
+
+  const handleClearSearch = () => {
+    setQuery("");
+    setSearchResults([]);
+    setSearched(false);
+  };
+
+  const handleRouteSelected = (route) => {
+    navigate('/maps', { state: { location: route.destination, coords: route.destinationCoords } });
+  };
 
   return (
     <main className="home-main">
@@ -25,10 +55,7 @@ function HomePage() {
             <p className="search-label">Decided on where you're headed?</p>
             <div className="search-row">
               <div className="search-input-wrap">
-                <svg className="search-icon" viewBox="0 0 24 24" fill="none">
-                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
+                <svg className="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                 <input
                   type="text"
                   placeholder="Search for routes"
@@ -37,8 +64,26 @@ function HomePage() {
                   className="search-input"
                 />
               </div>
-              <button className="btn-search">Search</button>
+              <button className="btn-search" onClick={handleSearch}>Search</button>
             </div>
+            {searched && (
+              <div className="search-results">
+                <button className="btn-clear" onClick={handleClearSearch}>Clear</button>
+                {searchResults.length > 0 ? (
+                  <div className="results-list">
+                    <p className="results-count">{searchResults.length} route(s) found</p>
+                    {searchResults.map((route, index) => (
+                      <div key={index} className="result-item" onClick={() => handleRouteSelected(route)} style={{ cursor: 'pointer' }}>
+                        <p><strong>{route.origin}</strong> → <strong>{route.destination}</strong></p>
+                        <p className="route-info">{route.distance} | {route.duration}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-results">No routes found for "{query}"</p>
+                )}
+              </div>
+            )}
             <button className="btn-routes" onClick={() => navigate('/maps')}>Maps</button>
           </div>
         </div>

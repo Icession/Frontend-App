@@ -22,7 +22,7 @@ root.render(
         <Route path="/home" element={<Home />} />
         <Route path="/maps" element={<Maps />} />
         <Route path="/about" element={<About />} />
-        <Route path="/account" element={<Account />} />
+        <Route path="/account" element={<Account />} /> 
       </Routes>
     </BrowserRouter>
   </React.StrictMode>

@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
 import Faq from "./Faq";
@@ -113,20 +112,22 @@ function HomePage() {
 export default function Home() {
   const [activePage, setActivePage] = useState("Home");
 
-const renderPage = () => {
-  switch (activePage) {
-    case "Home": return <HomePage />;
-    case "About": return <About />;
-    case "F.A.Q": return <Faq />;
-    case "Account": return <Account />;
-    case "Maps": return <Maps />;
-    default: return <HomePage />;
-  }
-};
+  const renderPage = () => {
+    switch (activePage) {
+      case "Home":               return <HomePage />;
+      case "About":              return <About />;
+      case "F.A.Q":             return <Faq />;
+      case "Account":            return <Account setActivePage={setActivePage} />;
+      case "EmergencyContacts":  return <EmergencyContacts onBack={() => setActivePage("Account")} />;
+      default:                   return <HomePage />;
+    }
+  };
 
   return (
     <div className="home-page">
+      <Navbar activePage={activePage} setActivePage={setActivePage} />
       {renderPage()}
+      <EmergencyAlert />
     </div>
   );
 }

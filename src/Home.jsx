@@ -1,45 +1,14 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import "./Home.css";
 import About from "./About";
 import Faq from "./Faq";
 import Account from "./Account";
-
-function Navbar({ activePage, setActivePage }) {
-  const links = ["Home", "About", "F.A.Q", "Account"];
-
-  return (
-    <nav className="navbar">
-      <div className="navbar-brand">
-        <div className="brand-icon">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="18" stroke="#8b0000" strokeWidth="2.5" fill="none"/>
-            <circle cx="20" cy="20" r="12" stroke="#8b0000" strokeWidth="2" fill="none"/>
-            <circle cx="20" cy="20" r="6" stroke="#8b0000" strokeWidth="2" fill="none"/>
-            <path d="M14 26 C14 22 17 18 20 16 C23 18 26 22 26 26" stroke="#8b0000" strokeWidth="2" strokeLinecap="round" fill="none"/>
-            <circle cx="20" cy="27" r="2.5" fill="#8b0000"/>
-          </svg>
-        </div>
-        <span className="brand-text">Ride<strong>Watch</strong></span>
-      </div>
-
-      <ul className="navbar-links">
-        {links.map((link) => (
-          <li key={link}>
-            <button
-              className={`nav-link ${activePage === link ? "active" : ""}`}
-              onClick={() => setActivePage(link)}
-            >
-              {link}
-            </button>
-          </li>
-        ))}
-      </ul>
-    </nav>
-  );
-}
+import Maps from "./Maps";
 
 function HomePage() {
   const [query, setQuery] = useState("");
+  const navigate = useNavigate();
 
   return (
     <main className="home-main">
@@ -70,7 +39,7 @@ function HomePage() {
               </div>
               <button className="btn-search">Search</button>
             </div>
-            <button className="btn-routes">Routes</button>
+            <button className="btn-routes" onClick={() => navigate('/maps')}>Maps</button>
           </div>
         </div>
 
@@ -105,13 +74,13 @@ const renderPage = () => {
     case "About": return <About />;
     case "F.A.Q": return <Faq />;
     case "Account": return <Account />;
+    case "Maps": return <Maps />;
     default: return <HomePage />;
   }
 };
 
   return (
     <div className="home-page">
-      <Navbar activePage={activePage} setActivePage={setActivePage} />
       {renderPage()}
     </div>
   );

@@ -6,51 +6,6 @@
   font-family: "Courier New", Courier, monospace; 
 }
 
-.about-navbar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #f5e6d3;
-  padding: 15px 50px;
-}
-
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.nav-logo {
-  height: 40px;
-  width: auto;
-}
-
-.brand-name {
-  font-size: 1.5rem;
-  font-weight: bold;
-  color: #2b2b2b;
-}
-
-.navbar-links {
-  display: flex;
-  list-style: none;
-  gap: 30px;
-}
-
-.nav-btn {
-  background: none;
-  border: none;
-  font-size: 1.1rem;
-  cursor: pointer;
-  color: #333;
-  padding-bottom: 5px;
-}
-
-.nav-btn.active {
-  border-bottom: 2px solid #333;
-  font-weight: bold;
-}
-
 .about-main {
   flex: 1;
   background-color: #8b0000; 

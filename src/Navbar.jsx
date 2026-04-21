@@ -1,27 +1,31 @@
 import { Link, useLocation } from 'react-router-dom';
+import './Navbar.css';
 
 const Navbar = () => {
   const location = useLocation();
-  const hideNavbar = ['/', '/home', '/login', '/register'].includes(location.pathname);
+  const hideNavbar = ['/', '/login', '/register'].includes(location.pathname);
 
   if (hideNavbar) return null;
 
   return (
     <nav className="navbar">
-      <div className="nav-container">
-        <h2 className="nav-logo">Ride<strong>Watch</strong></h2>
-        <ul className="nav-menu">
-          <li className="nav-item">
-            <Link to="/home" className="nav-link">Home</Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/login" className="nav-link">Login</Link>
-          </li>
-          <li className="nav-item">
-            <Link to="/register" className="nav-link">Register</Link>
-          </li>
-        </ul>
-      </div>
+      <Link to="/home" className="nav-brand">
+        <span className="brand-text">RideWatch</span>
+      </Link>
+      <ul className="nav-menu">
+        <li>
+          <Link to="/home" className={`nav-link ${location.pathname === '/home' ? 'active' : ''}`}>Home</Link>
+        </li>
+        <li>
+          <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
+        </li>
+        <li>
+          <Link to="/maps" className={`nav-link ${location.pathname === '/maps' ? 'active' : ''}`}>Map</Link>
+        </li>
+        <li>
+          <Link to="/account" className={`nav-link ${location.pathname === '/account' ? 'active' : ''}`}>Account</Link>
+        </li>
+      </ul>
     </nav>
   );
 };

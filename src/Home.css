@@ -10,66 +10,6 @@
   font-family: "Courier New", Courier, monospace;
 }
 
-.navbar {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: #f5e6d3;
-  padding: 12px 32px;
-}
-
-.navbar-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
-
-.brand-icon svg {
-  width: 38px;
-  height: 38px;
-}
-
-.brand-text {
-  font-size: 1.2rem;
-  color: #111;
-  font-family: "Georgia", serif;
-  font-weight: 400;
-}
-
-.brand-text strong {
-  font-weight: 700;
-}
-
-.navbar-links {
-  list-style: none;
-  display: flex;
-  gap: 32px;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-link {
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  cursor: pointer;
-  color: #333;
-  font-size: 15px;
-  font-family: "Courier New", Courier, monospace;
-  padding-bottom: 4px;
-  transition: color 0.2s, border-color 0.2s;
-}
-
-.nav-link:hover {
-  color: #8b0000;
-}
-
-.nav-link.active {
-  color: #111;
-  border-bottom: 2px solid #8b0000;
-  font-weight: 600;
-}
-
 .home-main {
   flex: 1;
   background: linear-gradient(160deg, #8b0000 0%, #5c0000 100%);

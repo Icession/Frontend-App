@@ -3,47 +3,41 @@ import "./Home.css";
 import About from "./About";
 import Faq from "./Faq";
 import Account from "./Account";
-import EmergencyAlert from "./EmergencyAlert";
-import EmergencyContacts from "./EmergencyContacts";
-import NotificationsDropdown from "./NotificationsDropdown";
-
-function Navbar({ activePage, setActivePage }) {
-  const links = ["Home", "About", "F.A.Q", "Account"];
-
-  return (
-    <nav className="navbar">
-      <div className="navbar-brand">
-        <div className="brand-icon">
-          <svg viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="20" cy="20" r="18" stroke="#8b0000" strokeWidth="2.5" fill="none"/>
-            <circle cx="20" cy="20" r="12" stroke="#8b0000" strokeWidth="2" fill="none"/>
-            <circle cx="20" cy="20" r="6" stroke="#8b0000" strokeWidth="2" fill="none"/>
-            <path d="M14 26 C14 22 17 18 20 16 C23 18 26 22 26 26" stroke="#8b0000" strokeWidth="2" strokeLinecap="round" fill="none"/>
-            <circle cx="20" cy="27" r="2.5" fill="#8b0000"/>
-          </svg>
-        </div>
-        <span className="brand-text">Ride<strong>Watch</strong></span>
-      </div>
-
-      <ul className="navbar-links">
-        {links.map((link) => (
-          <li key={link}>
-            <button
-              className={`nav-link ${activePage === link ? "active" : ""}`}
-              onClick={() => setActivePage(link)}
-            >
-              {link}
-            </button>
-          </li>
-        ))}
-      </ul>
-      <NotificationsDropdown />
-    </nav>
-  );
-}
+import Maps from "./Maps";
+import Sampledata from "./RouteSampledata";
 
 function HomePage() {
   const [query, setQuery] = useState("");
+  const [searchResults, setSearchResults] = useState([]);
+  const [searched, setSearched] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (query.trim() === "") {
+      setSearchResults([]);
+      setSearched(false);
+      return;
+    }
+    
+    const results = Sampledata.filter((route) =>
+      route.destination.toLowerCase().includes(query.toLowerCase()) ||
+      route.origin.toLowerCase().includes(query.toLowerCase())
+    );
+    
+    setSearchResults(results);
+    setSearched(true);
+  };
+
+  const handleClearSearch = () => {
+    setQuery("");
+    setSearchResults([]);
+    setSearched(false);
+  };
+
+  const handleRouteSelected = (route) => {
+    navigate('/maps', { state: { location: route.destination, coords: route.destinationCoords } });
+  };
 
   return (
     <main className="home-main">
@@ -60,10 +54,7 @@ function HomePage() {
             <p className="search-label">Decided on where you're headed?</p>
             <div className="search-row">
               <div className="search-input-wrap">
-                <svg className="search-icon" viewBox="0 0 24 24" fill="none">
-                  <circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/>
-                  <path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                </svg>
+                <svg className="search-icon" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="currentColor" strokeWidth="2"/><path d="M16.5 16.5L21 21" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/></svg>
                 <input
                   type="text"
                   placeholder="Search for routes"
@@ -72,9 +63,27 @@ function HomePage() {
                   className="search-input"
                 />
               </div>
-              <button className="btn-search">Search</button>
+              <button className="btn-search" onClick={handleSearch}>Search</button>
             </div>
-            <button className="btn-routes">Routes</button>
+            {searched && (
+              <div className="search-results">
+                <button className="btn-clear" onClick={handleClearSearch}>Clear</button>
+                {searchResults.length > 0 ? (
+                  <div className="results-list">
+                    <p className="results-count">{searchResults.length} route(s) found</p>
+                    {searchResults.map((route, index) => (
+                      <div key={index} className="result-item" onClick={() => handleRouteSelected(route)} style={{ cursor: 'pointer' }}>
+                        <p><strong>{route.origin}</strong> → <strong>{route.destination}</strong></p>
+                        <p className="route-info">{route.distance} | {route.duration}</p>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="no-results">No routes found for "{query}"</p>
+                )}
+              </div>
+            )}
+            <button className="btn-routes" onClick={() => navigate('/maps')}>Maps</button>
           </div>
         </div>
 

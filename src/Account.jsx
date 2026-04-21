@@ -13,7 +13,7 @@ const userData = {
   safetyScore: "98%",
 };
 
-export default function Account() {
+export default function Account({ setActivePage }) {
   const navigate = useNavigate();
   const [editMode, setEditMode] = useState(false);
   const [form, setForm] = useState({
@@ -49,21 +49,17 @@ export default function Account() {
             </div>
           </div>
           <div className="profile-hero-actions">
-            <button
-              className="btn-edit"
-              onClick={() => setEditMode(!editMode)}
-            >
+            <button className="btn-edit" onClick={() => setEditMode(!editMode)}>
               {editMode ? "Cancel" : "Edit Profile"}
             </button>
             {editMode && (
-              <button
-                className="btn-save"
-                onClick={() => setEditMode(false)}
-              >
+              <button className="btn-save" onClick={() => setEditMode(false)}>
                 Save Changes
               </button>
             )}
-            <button className="btn-logout" onClick={() => navigate('/login')}>Logout</button>
+            <button className="btn-logout" onClick={() => navigate("/login")}>
+              Logout
+            </button>
           </div>
         </div>
 
@@ -92,26 +88,15 @@ export default function Account() {
             <div className="field-group">
               <label className="field-label">Full Name</label>
               {editMode ? (
-                <input
-                  className="field-input"
-                  name="name"
-                  value={form.name}
-                  onChange={handleChange}
-                />
+                <input className="field-input" name="name" value={form.name} onChange={handleChange} />
               ) : (
                 <div className="field-display">{form.name}</div>
               )}
             </div>
-
             <div className="field-group">
               <label className="field-label">Gender</label>
               {editMode ? (
-                <select
-                  className="field-input"
-                  name="gender"
-                  value={form.gender}
-                  onChange={handleChange}
-                >
+                <select className="field-input" name="gender" value={form.gender} onChange={handleChange}>
                   <option>Male</option>
                   <option>Female</option>
                   <option>Prefer not to say</option>
@@ -120,30 +105,18 @@ export default function Account() {
                 <div className="field-display">{form.gender}</div>
               )}
             </div>
-
             <div className="field-group">
               <label className="field-label">Email</label>
               {editMode ? (
-                <input
-                  className="field-input"
-                  name="email"
-                  value={form.email}
-                  onChange={handleChange}
-                />
+                <input className="field-input" name="email" value={form.email} onChange={handleChange} />
               ) : (
                 <div className="field-display">{form.email}</div>
               )}
             </div>
-
             <div className="field-group">
               <label className="field-label">Contact Number</label>
               {editMode ? (
-                <input
-                  className="field-input"
-                  name="contact"
-                  value={form.contact}
-                  onChange={handleChange}
-                />
+                <input className="field-input" name="contact" value={form.contact} onChange={handleChange} />
               ) : (
                 <div className="field-display">{form.contact}</div>
               )}
@@ -154,6 +127,7 @@ export default function Account() {
         <div className="section-card">
           <h3 className="section-title">Account Settings</h3>
           <div className="quick-links">
+
             <button className="quick-link-item">
               <div className="quick-link-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
@@ -174,7 +148,10 @@ export default function Account() {
               <svg className="quick-link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
 
-            <button className="quick-link-item">
+            <button
+              className="quick-link-item"
+              onClick={() => setActivePage && setActivePage("EmergencyContacts")}
+            >
               <div className="quick-link-icon">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                   <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
@@ -193,6 +170,7 @@ export default function Account() {
               <span className="quick-link-label">Delete Account</span>
               <svg className="quick-link-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
             </button>
+
           </div>
         </div>
 

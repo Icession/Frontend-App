@@ -1,7 +1,6 @@
 import React from 'react';
 import './About.css';
-// import logo from './logo.png';
-// import heroImage from './about-hero.png'; 
+import logo2 from "./logo.png";
 
 const About = () => {
   return (
@@ -14,9 +13,9 @@ const About = () => {
             </h1>
           </div>
           <div className="about-image-side">
-            <div className="image-card" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minWidth: '300px', minHeight: '200px' }}>
-              <h1 style={{ color: '#8b0000', fontSize: '3rem', margin: 0, textAlign: 'center' }}>RIDEWATCH</h1>
-            </div>
+            <div className="hero-card">
+                <img src={logo2} alt="Home Logo" style={{ width: "100%", maxWidth: "400px", height: "auto" }} />
+              </div>
           </div>
         </div>
       </main>

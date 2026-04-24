@@ -5,6 +5,11 @@ import Faq from "./Faq";
 import Account from "./Account";
 import Maps from "./Maps";
 import Sampledata from "./RouteSampledata";
+import Navbar from "./Navbar";
+import EmergencyAlert from "./EmergencyAlert";
+import EmergencyContacts from "./EmergencyContacts";
+import { useNavigate } from "react-router-dom";
+
 
 function HomePage() {
   const [query, setQuery] = useState("");

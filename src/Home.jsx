@@ -130,7 +130,6 @@ export default function Home() {
 
   return (
     <div className="home-page">
-      <Navbar activePage={activePage} setActivePage={setActivePage} />
       {renderPage()}
       <EmergencyAlert />
     </div>

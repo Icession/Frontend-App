@@ -17,10 +17,13 @@ const Navbar = () => {
           <Link to="/home" className={`nav-link ${location.pathname === '/home' ? 'active' : ''}`}>Home</Link>
         </li>
         <li>
+          <Link to="/maps" className={`nav-link ${location.pathname === '/maps' ? 'active' : ''}`}>Map</Link>
+        </li>
+        <li>
           <Link to="/about" className={`nav-link ${location.pathname === '/about' ? 'active' : ''}`}>About</Link>
         </li>
         <li>
-          <Link to="/maps" className={`nav-link ${location.pathname === '/maps' ? 'active' : ''}`}>Map</Link>
+          <Link to="/faq" className={`nav-link ${location.pathname === '/Faq' ? 'active' : ''}`}>FAQ</Link>
         </li>
         <li>
           <Link to="/account" className={`nav-link ${location.pathname === '/account' ? 'active' : ''}`}>Account</Link>

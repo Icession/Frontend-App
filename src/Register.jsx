@@ -1,6 +1,8 @@
 import React, { useState } from "react";
 import "./Register.css";
 import { Link, useNavigate } from "react-router-dom";
+import { register } from "./userService";
+import { toast } from "react-toastify";
 
 function Register() {
   const navigate = useNavigate();

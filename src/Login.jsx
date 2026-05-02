@@ -1,6 +1,6 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import "./Login.css";
-import { Link, useNavigate } from "react-router-dom";
+import { data, Link, useNavigate } from "react-router-dom";
 
 function Login() {
   const navigate = useNavigate();
@@ -166,4 +166,22 @@ function Login() {
   );
 }
 
+// Test Fucntion ni para check if connected ang springboot sa React Web App
+
+// function Login(){
+//   const [message, setMessage] = useState("");
+
+//   useEffect(() => {
+//     fetch("http://localhost:8080/api/hello")
+//     .then(res => res.text())
+//     .then(data => setMessage(data));
+//   }, [])
+
+//   return (
+//     <div>
+//       <h1>Login</h1>
+//       <p>{message}</p>
+//     </div>
+//   );
+// }
 export default Login;

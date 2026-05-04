@@ -9,6 +9,7 @@ import Navbar from './Navbar';
 import Maps from './Maps';
 import About from './About';
 import Account from './Account';
+import EmergencyAlert from './EmergencyAlert';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
@@ -24,6 +25,7 @@ root.render(
         <Route path="/about" element={<About />} />
         <Route path="/account" element={<Account />} /> 
       </Routes>
+      <EmergencyAlert />
     </BrowserRouter>
   </React.StrictMode>
 );

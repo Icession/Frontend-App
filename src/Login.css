@@ -410,3 +410,10 @@
     align-items: flex-start;
   }
 }
+
+.login-error {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(192,57,43,0.1); border: 1px solid rgba(192,57,43,0.25);
+  border-radius: 8px; padding: 10px 14px;
+  color: #c0392b; font-size: 0.83rem; margin-bottom: 16px;
+}

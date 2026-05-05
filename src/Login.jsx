@@ -23,11 +23,33 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
+
+    try {
+      const response = await fetch("http://localhost:8080/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("userId", data.id);
+        localStorage.setItem("userName", data.name);
+        localStorage.setItem("userEmail", data.email);
+        navigate("/home");
+      } else {
+        alert(data.error || "Invalid email or password");
+      }
+    } catch (error) {
+      alert("Cannot connect to server. Make sure backend is running.");
+    } finally {
       setIsLoading(false);
-      navigate("/home");
-    }, 1500);
+    }
   };
 
   return (

@@ -6,26 +6,36 @@ const EMAILJS_SERVICE_ID = "service_ddaz9is";
 const EMAILJS_TEMPLATE_ID = "template_kw2qbqf";
 const EMAILJS_PUBLIC_KEY = "XhiZrS1XmZ2UdD8EX";
 
-const EMERGENCY_CONTACTS = [
-  { name: "Mom", email: "{{to_email}}" },
-];
+const API_URL = "http://localhost:8080/api/emergency-alerts";
 
-const USER_NAME = "John Doe";
+const getAuthHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+});
 
 export default function EmergencyAlert() {
   const [phase, setPhase] = useState("idle");
   const [countdown, setCountdown] = useState(5);
-  const [location, setLocation] = useState(null);
+  const [emergencyContacts, setEmergencyContacts] = useState([]);
   const [errorMsg, setErrorMsg] = useState("");
   const timerRef = useRef(null);
 
+  // Fetch emergency contacts and user name from backend on mount
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (pos) => setLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }),
-        () => setLocation(null)
-      );
-    }
+    const fetchContacts = async () => {
+      try {
+        const res = await fetch("http://localhost:8080/api/emergency-contacts", {
+          headers: getAuthHeaders(),
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setEmergencyContacts(data);
+        }
+      } catch (err) {
+        console.error("Failed to fetch emergency contacts:", err);
+      }
+    };
+    fetchContacts();
   }, []);
 
   useEffect(() => {
@@ -42,9 +52,7 @@ export default function EmergencyAlert() {
     return () => clearInterval(timerRef.current);
   }, [phase, countdown]);
 
-  const handleSOSClick = () => {
-    setPhase("confirm");
-  };
+  const handleSOSClick = () => setPhase("confirm");
 
   const handleConfirm = () => {
     setCountdown(5);
@@ -57,14 +65,6 @@ export default function EmergencyAlert() {
     setCountdown(5);
   };
 
-  const sendAlert = async () => {
-  setPhase("sending");
-
-  const time = new Date().toLocaleString("en-PH", {
-    dateStyle: "medium",
-    timeStyle: "short",
-  });
-
   const getLocation = () =>
     new Promise((resolve) => {
       if (!navigator.geolocation) return resolve(null);
@@ -75,42 +75,69 @@ export default function EmergencyAlert() {
       );
     });
 
-  const freshLocation = await getLocation();
+  const sendAlert = async () => {
+    setPhase("sending");
 
-  const mapsLink = freshLocation
-    ? `https://maps.google.com/?q=${freshLocation.lat},${freshLocation.lng}`
-    : "Location unavailable";
+    const time = new Date().toLocaleString("en-PH", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
-  const locationText = freshLocation
-    ? `${freshLocation.lat.toFixed(5)}, ${freshLocation.lng.toFixed(5)}`
-    : "Could not retrieve location";
+    const freshLocation = await getLocation();
 
-  try {
-    await Promise.all(
-      EMERGENCY_CONTACTS.map((contact) =>
-        emailjs.send(
-          EMAILJS_SERVICE_ID,
-          EMAILJS_TEMPLATE_ID,
-          {
-            user_name: USER_NAME,
-            to_email: contact.email,
-            location: locationText,
-            maps_link: mapsLink,
-            time,
-          },
-          EMAILJS_PUBLIC_KEY
-        )
-      )
-    );
-    setPhase("sent");
-    setTimeout(() => setPhase("idle"), 6000);
-  } catch (err) {
-    console.error("EmailJS error:", err);
-    setErrorMsg("Failed to send alert. Check your EmailJS config.");
-    setPhase("error");
-    setTimeout(() => setPhase("idle"), 5000);
-  }
-};
+    const mapsLink = freshLocation
+      ? `https://maps.google.com/?q=${freshLocation.lat},${freshLocation.lng}`
+      : "Location unavailable";
+
+    const locationText = freshLocation
+      ? `${freshLocation.lat.toFixed(5)}, ${freshLocation.lng.toFixed(5)}`
+      : "Could not retrieve location";
+
+    const userName = localStorage.getItem("userName") || "RideWatch User";
+
+    try {
+      // 1 — Send emails via EmailJS to all emergency contacts
+      if (emergencyContacts.length > 0) {
+        await Promise.all(
+          emergencyContacts.map((contact) =>
+            emailjs.send(
+              EMAILJS_SERVICE_ID,
+              EMAILJS_TEMPLATE_ID,
+              {
+                user_name: userName,
+                to_email: contact.email,
+                location: locationText,
+                maps_link: mapsLink,
+                time,
+              },
+              EMAILJS_PUBLIC_KEY
+            )
+          )
+        );
+      }
+
+      // 2 — Log the alert to the backend database
+      if (freshLocation) {
+        await fetch(API_URL, {
+          method: "POST",
+          headers: getAuthHeaders(),
+          body: JSON.stringify({
+            latitude: freshLocation.lat,
+            longitude: freshLocation.lng,
+            mapsLink: mapsLink,
+          }),
+        });
+      }
+
+      setPhase("sent");
+      setTimeout(() => setPhase("idle"), 6000);
+    } catch (err) {
+      console.error("Alert error:", err);
+      setErrorMsg("Failed to send alert. Check your EmailJS config.");
+      setPhase("error");
+      setTimeout(() => setPhase("idle"), 5000);
+    }
+  };
 
   return (
     <>
@@ -142,6 +169,11 @@ export default function EmergencyAlert() {
                   This will immediately notify your emergency contacts with your
                   current GPS location via email.
                 </p>
+                {emergencyContacts.length === 0 && (
+                  <p style={{ color: "#8b0000", fontSize: "13px", marginBottom: "8px" }}>
+                    ⚠ No emergency contacts added. Please add contacts in your account settings.
+                  </p>
+                )}
                 <div className="sos-modal-actions">
                   <button className="sos-btn sos-btn--cancel" onClick={handleCancel}>
                     Cancel

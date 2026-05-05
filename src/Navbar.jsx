@@ -23,6 +23,9 @@ const Navbar = () => {
           <Link to="/maps" className={`nav-link ${location.pathname === '/maps' ? 'active' : ''}`}>Map</Link>
         </li>
         <li>
+          <Link to="/faq" className={`nav-link ${location.pathname === '/faq' ? 'active' : ''}`}>FAQ</Link>
+        </li>
+        <li>
           <Link to="/account" className={`nav-link ${location.pathname === '/account' ? 'active' : ''}`}>Account</Link>
         </li>
       </ul>

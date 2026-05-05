@@ -1,62 +1,124 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import "./EmergencyContacts.css";
 
 const MAX_CONTACTS = 3;
+const API_URL = "http://localhost:8080/api/emergency-contacts";
 
-const defaultContacts = [
-  { id: 1, name: "Mom", email: "mom@gmail.com", phone: "+63912345678", relation: "Family" },
-];
+const getAuthHeaders = () => ({
+  "Content-Type": "application/json",
+  Authorization: `Bearer ${localStorage.getItem("token")}`,
+});
 
 export default function EmergencyContacts({ onBack }) {
-  const [contacts, setContacts] = useState(defaultContacts);
+  const [contacts, setContacts] = useState([]);
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState(null);
-  const [form, setForm] = useState({ name: "", email: "", phone: "", relation: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", relationship: "" });
   const [deleteId, setDeleteId] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState(null);
+
+  // Fetch contacts on mount
+  useEffect(() => {
+    fetchContacts();
+  }, []);
+
+  const fetchContacts = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(API_URL, { headers: getAuthHeaders() });
+      if (!res.ok) throw new Error("Failed to load contacts");
+      const data = await res.json();
+      setContacts(data);
+    } catch (err) {
+      setError("Could not load contacts. Make sure the backend is running.");
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
   const openAdd = () => {
-    setForm({ name: "", email: "", phone: "", relation: "" });
+    setForm({ name: "", email: "", phone: "", relationship: "" });
     setEditingId(null);
     setShowForm(true);
   };
 
   const openEdit = (contact) => {
-    setForm({ name: contact.name, email: contact.email, phone: contact.phone, relation: contact.relation });
+    setForm({
+      name: contact.name,
+      email: contact.email,
+      phone: contact.phone || "",
+      relationship: contact.relationship || "",
+    });
     setEditingId(contact.id);
     setShowForm(true);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!form.name.trim() || !form.email.trim()) return;
+    setSaving(true);
+    setError(null);
 
-    if (editingId !== null) {
-      setContacts((prev) =>
-        prev.map((c) => (c.id === editingId ? { ...c, ...form } : c))
-      );
-    } else {
-      setContacts((prev) => [
-        ...prev,
-        { id: Date.now(), ...form },
-      ]);
+    try {
+      const isEdit = editingId !== null;
+      const url = isEdit ? `${API_URL}/${editingId}` : API_URL;
+      const method = isEdit ? "PUT" : "POST";
+
+      const res = await fetch(url, {
+        method,
+        headers: getAuthHeaders(),
+        body: JSON.stringify(form),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Failed to save contact");
+        return;
+      }
+
+      if (isEdit) {
+        setContacts((prev) => prev.map((c) => (c.id === editingId ? data : c)));
+      } else {
+        setContacts((prev) => [...prev, data]);
+      }
+
+      setShowForm(false);
+      setEditingId(null);
+    } catch (err) {
+      setError("Cannot connect to server.");
+    } finally {
+      setSaving(false);
     }
-    setShowForm(false);
-    setEditingId(null);
   };
 
-  const handleDelete = (id) => {
-    setContacts((prev) => prev.filter((c) => c.id !== id));
-    setDeleteId(null);
+  const handleDelete = async (id) => {
+    setError(null);
+    try {
+      const res = await fetch(`${API_URL}/${id}`, {
+        method: "DELETE",
+        headers: getAuthHeaders(),
+      });
+
+      if (!res.ok) throw new Error("Failed to delete contact");
+      setContacts((prev) => prev.filter((c) => c.id !== id));
+      setDeleteId(null);
+    } catch (err) {
+      setError("Could not delete contact.");
+    }
   };
 
   const relationColors = {
-    Family:  { bg: "rgba(139,0,0,0.08)",  text: "#8b0000" },
+    Family:  { bg: "rgba(139,0,0,0.08)",   text: "#8b0000" },
     Friend:  { bg: "rgba(30,100,180,0.08)", text: "#1e64b4" },
-    Partner: { bg: "rgba(180,70,30,0.08)", text: "#b4461e" },
-    Other:   { bg: "rgba(80,80,80,0.1)",  text: "#444" },
+    Partner: { bg: "rgba(180,70,30,0.08)",  text: "#b4461e" },
+    Other:   { bg: "rgba(80,80,80,0.1)",    text: "#444" },
   };
 
   const getRelColor = (rel) => relationColors[rel] || relationColors["Other"];
@@ -79,70 +141,92 @@ export default function EmergencyContacts({ onBack }) {
             </p>
           </div>
         </div>
+
+        {error && (
+          <div style={{
+            background: "rgba(139,0,0,0.08)",
+            color: "#8b0000",
+            padding: "10px 16px",
+            borderRadius: "8px",
+            marginBottom: "12px",
+            fontSize: "14px"
+          }}>
+            {error}
+          </div>
+        )}
+
         <div className="ec-limit-bar">
           <div className="ec-limit-dots">
             {Array.from({ length: MAX_CONTACTS }).map((_, i) => (
               <span key={i} className={`ec-dot ${i < contacts.length ? "ec-dot--filled" : ""}`} />
             ))}
           </div>
-          <span className="ec-limit-text">  
+          <span className="ec-limit-text">
             {contacts.length} / {MAX_CONTACTS} contacts added
           </span>
         </div>
 
         <div className="ec-list">
-          {contacts.map((contact) => {
-            const rel = getRelColor(contact.relation);
-            return (
-              <div key={contact.id} className="ec-card">
-                <div className="ec-card-left">
-                  <div className="ec-avatar">
-                    {contact.name.charAt(0).toUpperCase()}
-                  </div>
-                  <div className="ec-card-info">
-                    <div className="ec-card-name-row">
-                      <span className="ec-card-name">{contact.name}</span>
-                      {contact.relation && (
-                        <span className="ec-relation-badge" style={{ background: rel.bg, color: rel.text }}>
-                          {contact.relation}
-                        </span>
-                      )}
-                    </div>
-                    <span className="ec-card-email">{contact.email}</span>
-                    {contact.phone && (
-                      <span className="ec-card-phone">{contact.phone}</span>
-                    )}
-                  </div>
-                </div>
-                <div className="ec-card-actions">
-                  <button className="ec-action-btn ec-action-btn--edit" onClick={() => openEdit(contact)}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
-                      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                    </svg>
-                  </button>
-                  <button className="ec-action-btn ec-action-btn--delete" onClick={() => setDeleteId(contact.id)}>
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <polyline points="3 6 5 6 21 6"/>
-                      <path d="M19 6l-1 14H6L5 6"/>
-                      <path d="M10 11v6"/><path d="M14 11v6"/>
-                      <path d="M9 6V4h6v2"/>
-                    </svg>
-                  </button>
-                </div>
-              </div>
-            );
-          })}
-
-          {contacts.length === 0 && (
-            <div className="ec-empty">
-              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8b0000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
-                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                <circle cx="9" cy="7" r="4"/>
-                <line x1="23" y1="11" x2="17" y2="11"/>
-              </svg>
-              <p>No emergency contacts added yet.</p>
+          {loading ? (
+            <div style={{ textAlign: "center", padding: "2rem", color: "#888" }}>
+              Loading contacts...
             </div>
+          ) : (
+            <>
+              {contacts.map((contact) => {
+                const rel = getRelColor(contact.relationship);
+                return (
+                  <div key={contact.id} className="ec-card">
+                    <div className="ec-card-left">
+                      <div className="ec-avatar">
+                        {contact.name.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="ec-card-info">
+                        <div className="ec-card-name-row">
+                          <span className="ec-card-name">{contact.name}</span>
+                          {contact.relationship && (
+                            <span className="ec-relation-badge" style={{ background: rel.bg, color: rel.text }}>
+                              {contact.relationship}
+                            </span>
+                          )}
+                        </div>
+                        <span className="ec-card-email">{contact.email}</span>
+                        {contact.phone && (
+                          <span className="ec-card-phone">{contact.phone}</span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="ec-card-actions">
+                      <button className="ec-action-btn ec-action-btn--edit" onClick={() => openEdit(contact)}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+                          <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                        </svg>
+                      </button>
+                      <button className="ec-action-btn ec-action-btn--delete" onClick={() => setDeleteId(contact.id)}>
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                          <polyline points="3 6 5 6 21 6"/>
+                          <path d="M19 6l-1 14H6L5 6"/>
+                          <path d="M10 11v6"/><path d="M14 11v6"/>
+                          <path d="M9 6V4h6v2"/>
+                        </svg>
+                      </button>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {contacts.length === 0 && (
+                <div className="ec-empty">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#8b0000" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" style={{ opacity: 0.4 }}>
+                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                    <circle cx="9" cy="7" r="4"/>
+                    <line x1="23" y1="11" x2="17" y2="11"/>
+                  </svg>
+                  <p>No emergency contacts added yet.</p>
+                </div>
+              )}
+            </>
           )}
         </div>
 
@@ -169,6 +253,7 @@ export default function EmergencyContacts({ onBack }) {
 
       </div>
 
+      {/* Add / Edit Modal */}
       {showForm && (
         <div className="ec-overlay" onClick={() => setShowForm(false)}>
           <div className="ec-form-modal" onClick={(e) => e.stopPropagation()}>
@@ -191,7 +276,7 @@ export default function EmergencyContacts({ onBack }) {
               </div>
               <div className="ec-field">
                 <label className="ec-field-label">Relationship</label>
-                <select className="ec-field-input" name="relation" value={form.relation} onChange={handleChange}>
+                <select className="ec-field-input" name="relationship" value={form.relationship} onChange={handleChange}>
                   <option value="">Select…</option>
                   <option>Family</option>
                   <option>Friend</option>
@@ -202,19 +287,22 @@ export default function EmergencyContacts({ onBack }) {
             </div>
 
             <div className="ec-form-actions">
-              <button className="ec-form-btn ec-form-btn--cancel" onClick={() => setShowForm(false)}>Cancel</button>
+              <button className="ec-form-btn ec-form-btn--cancel" onClick={() => setShowForm(false)} disabled={saving}>
+                Cancel
+              </button>
               <button
                 className="ec-form-btn ec-form-btn--save"
                 onClick={handleSave}
-                disabled={!form.name.trim() || !form.email.trim()}
+                disabled={!form.name.trim() || !form.email.trim() || saving}
               >
-                {editingId !== null ? "Save Changes" : "Add Contact"}
+                {saving ? "Saving..." : editingId !== null ? "Save Changes" : "Add Contact"}
               </button>
             </div>
           </div>
         </div>
       )}
 
+      {/* Delete Confirmation Modal */}
       {deleteId !== null && (
         <div className="ec-overlay" onClick={() => setDeleteId(null)}>
           <div className="ec-form-modal ec-delete-modal" onClick={(e) => e.stopPropagation()}>

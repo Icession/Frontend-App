@@ -97,3 +97,27 @@
 .route-marker-end .route-marker-dot {
   background: #f06b6b;
 }
+
+.current-location-btn {
+  position: absolute;
+  top: 94px;
+  right: 18px;
+  z-index: 900;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 14px;
+  background: #ffffff;
+  color: #640d14;
+  font-size: 22px;
+  font-weight: 900;
+  cursor: pointer;
+  box-shadow: 0 10px 24px rgba(37, 9, 2, 0.16);
+  display: grid;
+  place-items: center;
+}
+
+.current-location-btn:hover {
+  background: #fff5f5;
+  color: #8b0000;
+}

@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import "./ETA.css";
 
-  function formatTravelTime(totalMinutes) {
+function formatTravelTime(totalMinutes) {
   if (!totalMinutes && totalMinutes !== 0) {
     return "";
   }
@@ -24,8 +24,6 @@ function LocationSearch({ label, placeholder, value, active, onFocus, onSelect }
   const [keyword, setKeyword] = useState(value?.name || "");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
-
-
 
   useEffect(() => {
     setKeyword(value?.name || "");
@@ -106,7 +104,11 @@ function ETA({
   onFindRoute,
   onReset,
   loadingRoute,
-  error
+  error,
+  savedRoutes = [],
+  onSaveRoute,
+  onLoadSavedRoute,
+  onDeleteSavedRoute
 }) {
   const [showResults, setShowResults] = useState(false);
 
@@ -127,6 +129,11 @@ function ETA({
   const handleReset = () => {
     setShowResults(false);
     onReset();
+  };
+
+  const handleLoadSavedRoute = (route) => {
+    onLoadSavedRoute(route);
+    setShowResults(true);
   };
 
   return (
@@ -196,10 +203,12 @@ function ETA({
         <div className="eta-results-panel">
           <div className="eta-results-header">
             <button onClick={() => setShowResults(false)}>←</button>
+
             <div>
               <strong>Route Summary</strong>
               <span>OSRM-calculated result</span>
             </div>
+
             <button onClick={handleFindRoute}>Refresh</button>
           </div>
 
@@ -220,9 +229,45 @@ function ETA({
             </div>
           </div>
 
+          <button className="eta-save-button" onClick={onSaveRoute}>
+            Save Route
+          </button>
+
           <button className="eta-reset-button bottom" onClick={handleReset}>
             Reset Planner
           </button>
+        </div>
+      )}
+
+      {savedRoutes.length > 0 && (
+        <div className="eta-history-section">
+          <div className="eta-history-header">
+            <h3>Route History</h3>
+            <span>{savedRoutes.length} saved</span>
+          </div>
+
+          <div className="eta-history-list">
+            {savedRoutes.map((route) => (
+              <div className="eta-history-card" key={route.id}>
+                <div className="eta-history-info">
+                  <strong>{route.origin?.name?.split(",")[0] || "Origin"}</strong>
+                  <span>to</span>
+                  <strong>{route.destination?.name?.split(",")[0] || "Destination"}</strong>
+
+                  <p>
+                    {formatTravelTime(route.routeData?.durationMin)} • {route.routeData?.distanceKm} km
+                  </p>
+
+                  <small>{route.savedAt}</small>
+                </div>
+
+                <div className="eta-history-actions">
+                  <button onClick={() => handleLoadSavedRoute(route)}>Go</button>
+                  <button onClick={() => onDeleteSavedRoute(route.id)}>Delete</button>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       )}
     </aside>

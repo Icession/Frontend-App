@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import "./Login.css";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { myAxios } from "./helper";
 
 function Login() {
   const navigate = useNavigate();
@@ -23,12 +25,31 @@ function Login() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    // Simulate API call
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      const response = await myAxios.post("/users/login", {
+        email: formData.email,
+        password: formData.password,
+      });
+      localStorage.setItem("token", response.data.token);
+      localStorage.setItem("user", JSON.stringify(response.data.user));
+      toast.success("Login successful!");
       navigate("/home");
-    }, 1500);
-  };
+    } catch (error) {
+      toast.error("Login failed. Please check your credentials.");
+      console.error("Login error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  }
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   // Simulate API call
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     navigate("/home");
+  //   }, 1500);
+  // };
 
   return (
       <div className="login-container">

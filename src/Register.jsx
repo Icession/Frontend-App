@@ -28,11 +28,31 @@ function Register() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
-    setTimeout(() => {
-      setIsLoading(false);
+    try {
+      if(formData.password !== formData.confirmPassword) {
+        toast.error("Passwords do not match.");
+        return;
+      }
+      const response = await register({
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+      });
+      localStorage.setItem("token", response.token);
       navigate("/home");
-    }, 1500);
-  };
+    } catch (error) {
+      toast.error("Registration failed. Please try again.");
+    }
+  }
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setIsLoading(true);
+  //   setTimeout(() => {
+  //     setIsLoading(false);
+  //     navigate("/home");
+  //   }, 1500);
+  // };
 
   return (
       <div className="login-container">

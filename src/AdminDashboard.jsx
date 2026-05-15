@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./AdminDashboard.css";
-import axios from "axios";
+import { myAxios } from "./helper";
 
 function AdminDashboard() {
   const [stats, setStats] = useState(null);
@@ -9,8 +9,6 @@ function AdminDashboard() {
   const [error, setError] = useState(null);
   const [activeTab, setActiveTab] = useState("stats");
 
-  const API_BASE = "http://localhost:8080/api";
-
   useEffect(() => {
     fetchDashboardStats();
     fetchUsers();
@@ -18,7 +16,7 @@ function AdminDashboard() {
 
   const fetchDashboardStats = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/admin/dashboard/stats`);
+      const response = await myAxios.get("/admin/dashboard/stats");
       setStats(response.data);
     } catch (err) {
       setError("Failed to load dashboard stats");
@@ -28,7 +26,7 @@ function AdminDashboard() {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get(`${API_BASE}/admin/users`);
+      const response = await myAxios.get("/admin/users");
       setUsers(response.data);
       setLoading(false);
     } catch (err) {
@@ -40,7 +38,7 @@ function AdminDashboard() {
 
   const handleUserStatusChange = async (userId, newStatus) => {
     try {
-      await axios.put(`${API_BASE}/admin/users/${userId}/status`, null, {
+      await myAxios.put(`/admin/users/${userId}/status`, null, {
         params: { isActive: newStatus }
       });
       fetchUsers();

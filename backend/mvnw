@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Maven Wrapper script for Linux/Mac
+
+MAVEN_VERSION="3.9.8"
+MAVEN_HOME="$HOME/.m2/wrapper"
+MAVEN_JAR="$MAVEN_HOME/maven-wrapper.jar"
+
+if [ ! -f "$MAVEN_JAR" ]; then
+    mkdir -p "$MAVEN_HOME"
+    cd "$MAVEN_HOME"
+    curl -sSL "https://repo.maven.apache.org/maven2/org/apache/maven/wrapper/maven-wrapper/3.2.0/maven-wrapper-3.2.0.jar" -o maven-wrapper.jar
+    cd -
+fi
+
+# Use system Java to run Maven
+exec java -jar "$MAVEN_JAR" "$@"

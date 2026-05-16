@@ -1,0 +1,38 @@
+spring:
+  application:
+    name: ridewatch-backend
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.H2Dialect
+        format_sql: true
+  datasource:
+    url: jdbc:h2:mem:ridewatch
+    username: sa
+    password: 
+    driver-class-name: org.h2.Driver
+  h2:
+    console:
+      enabled: true
+  profiles:
+    active: dev
+
+logging:
+  level:
+    com.ridewatch: DEBUG
+    org.springframework.security: DEBUG
+
+app:
+  jwt:
+    secret: your-secret-key-change-this-in-production-min-32-chars-required
+    expiration-ms: 86400000
+  cors:
+    allowed-origins: "http://localhost:3000,http://localhost:5173"
+
+server:
+  port: 3001
+  servlet:
+    context-path: /api
